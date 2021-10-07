@@ -46,6 +46,26 @@ router.post('/', (req, res) => {
         });
 });
 
+router.post('/login', (req, res) => {
+    User.findOne({
+        where: {
+            email: req.body.email
+        }
+    }).then(dbUserData => {
+        if(!dbUserData) {
+            res.status(400).json({ message: 'Email address not found' });
+            return;
+        }
+        const validPasssword = dbUserData.checkPassword(req.body.password);
+
+        if (!validPassword) {
+            req.status(400).json({ message: 'Incorrect password' });
+            return;
+        }
+        res.json({ user: dbUserData, message: 'You are now logged in!' });
+    });
+});
+
 router.put('/:id', (req, res) => {
     // pass in req.body instead to only update what's passed through 
     User.update(req.body, {
